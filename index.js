@@ -24,36 +24,16 @@ server.get('/api/projects', async (req, res) => {
 //Get Project by ID and Any Associated Actions 
 server.get('/api/projects/:id', async (req, res) => {
   try {
-    const projects = await db('projects')
+    const project = await db('projects')
       .where({id: req.params.id})
       .first()
 
-    // const projects = await db('projects')
-      // .select('projects.name', 'projects.description', 'projects.completed' )
-      // .innerJoin('actions', 'project_id', 'projects.id')
-      // .where({project_id: req.params.id})
-      // .first()
-    const actions = [
-      await db('projects')
-      .select('action', 'notes', 'action_completed', 'project_id' )
-      .innerJoin('actions', 'project_id', 'projects.id')
+    const actions = await db('actions')
       .where({project_id: req.params.id})
-      .first()
-    ]
 
-    if(!actions[0].action){
-      const format = {
-        projects, actions
-      }
-      res.status(200).json(format);
-    }
-    else {
-      console.log(projects)
-      res.status(200).json(projects);
-    }
-
-    // console.log(projects, "actions: ", aActions)
-    // res.status(200).json(format);
+    project.actions = actions;
+    console.log(project)
+    res.status(200).json(project)
   }
   catch (error) {
     console.log(error)
